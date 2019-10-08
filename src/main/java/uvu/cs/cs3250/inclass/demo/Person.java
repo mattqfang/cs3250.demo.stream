@@ -1,21 +1,30 @@
 package uvu.cs.cs3250.inclass.demo;
 
 public class Person {
-	private String name;
+
 	private Integer age;
+	private String lastName;
+	private String firstName;
 	
 	
-	public Person(String name, Integer age) {
+	public Person(String lastName, String firstName, Integer age) {
 		super();
-		this.name = name;
 		this.age = age;
+		this.lastName = lastName;
+		this.firstName = firstName;
 	}
 	
-	public String getName() {
-		return name;
+	public String getLastName() {
+		return lastName;
 	}
-	public void setName(String name) {
-		this.name = name;
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+	public String getFirstName() {
+		return firstName;
+	}
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
 	}
 	public Integer getAge() {
 		return age;
