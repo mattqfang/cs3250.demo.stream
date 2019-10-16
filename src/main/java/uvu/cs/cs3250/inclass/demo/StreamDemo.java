@@ -1,86 +1,91 @@
 package uvu.cs.cs3250.inclass.demo;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class StreamDemo {
-
+	
 	public static void main(String[] args) {
-//		List<String> names = new ArrayList<>();
-//		names.add("matt");
-//		names.add("john");
-//		names.add("mark");
-//		
-//		for(String name: names) {
-//			if (name.startsWith("m")) {
-//				System.out.println(name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase());
-//			}
-//		}
-//		
-//		for(int n=0; n<names.size(); n++) {
-//			System.out.println(names.get(n));
-//		}
-		
-//		names.stream()
-//			.filter(n -> n.startsWith("m"))
-//			.map(n -> n.substring(0, 1).toUpperCase() + n.substring(1).toLowerCase())
-//			.forEach(System.out::println);
-		
 		List<Person> persons = new ArrayList<>();
-		persons.add(new Person("fang","matt", 21));
-		persons.add(new Person("johnson","mark", 82));
+		Address address1 = new Address()
+				.setLine1("150 s 300 w")
+				.setCity("Orem")
+				.setState("UT")
+				.setZip("84497");
+		
+		Address address2 = new Address()
+				.setLine1("150 n 300 w")
+				.setCity("Orem")
+				.setState("UT")
+				.setZip("84497");
+		
+		persons.add(new Person("fang","matt", 21).setAddress(address1));
+		persons.add(new Person("johnson","mark", 82).setAddress(address2));
 		persons.add(new Person("doe","john", 125));
 		
-		List<Person> results = persons.stream()
-			.filter(p -> p.getFirstName().startsWith("m"))
-			//.map(Person::getLastName)n not working
-			.sorted(Comparator.comparing(Person::getLastName))
-			.collect(Collectors.toList());
+		Address mattAddr = StreamDemo.findAddressByName("matt", "fang", persons);
 		
-		persons.stream()
-			.sorted(Comparator.comparing(Person::getAge))
-			.forEach(p -> System.out.println(p.getFirstName()+" "+p.getLastName()));
+		System.out.println(mattAddr);
 		
-		List<Person> anotherResults = persons.parallelStream()
-			.filter(p -> p.getLastName().equalsIgnoreCase("fang") 
-					&& p.getFirstName().equalsIgnoreCase("matt"))
-			.collect(Collectors.toList());
+		Address jeffAddr = StreamDemo.findAddressByName("jeff", "fang", persons);
 		
-		System.out.println("Matt Fang is "+ anotherResults.get(0).getAge()+ " years old.");
-
+		System.out.println(jeffAddr);
 		
-		Optional<Person> matt = persons.parallelStream()
-			.filter(p -> p.getLastName().equalsIgnoreCase("fang") 
-				&& p.getFirstName().equalsIgnoreCase("matt"))
-			.findFirst();
+		int mattAge = StreamDemo.findAgeByName("matt", "fang", persons);
 		
-		if (matt.isPresent()) {
-			System.out.println("Matt Fang is "+ matt.get().getAge()+ " years old.");
-		}
+		System.out.println(mattAge);
 		
-		persons.parallelStream()
-		.filter(p -> p.getLastName().equalsIgnoreCase("fang") 
-			&& p.getFirstName().equalsIgnoreCase("matt"))
-		.findFirst()
-		.map(m -> m.getAge())
-		.ifPresent(a -> System.out.println("Matt Fang is "+ a + " years old."));
+		Integer jeffAge = StreamDemo.findAgeByName("jeff", "fang", persons);
 		
-//		for(Person person: persons) {
-//			if (person.getName().startsWith("m")) {
-//				System.out.println(person.getName().substring(0, 1).toUpperCase() 
-//						+ person.getName().substring(1).toLowerCase());
-//			}
-//		}
+		System.out.println(jeffAge);
 		
-//		persons.stream()
-//			.filter(p -> p.getName().startsWith("m"))
-//			.map(p -> p.getName())
-//			.map(n -> n.substring(0, 1).toUpperCase() + n.substring(1).toLowerCase())
-//			.sorted()
-//			.forEach(System.out::println);
+		List<Person> utahPeople = StreamDemo.findPersonsByState("ut", persons);
+		
+		utahPeople.stream()
+			.forEach(System.out::println);
+		
+		List<Person> nevadaPeople = StreamDemo.findPersonsByState("nv", persons);
+		
+		nevadaPeople.stream()
+			.forEach(System.out::println);
+		
+	}
+	
+	public static Address findAddressByName(String firstName, String lastName, List<Person> persons) {
+		return persons.stream()
+			.filter(p -> p.getFirstName().equalsIgnoreCase(firstName) && 
+						 p.getLastName().equalsIgnoreCase(lastName))
+			.findFirst()
+			.map(p -> p.getAddress())
+			.orElse(new Address());
+			
+	}
+	
+	public static Integer findAgeByName(String firstName, String lastName, List<Person> persons) {
+		return persons.stream()
+			.filter(p -> p.getFirstName().equalsIgnoreCase(firstName) && 
+						 p.getLastName().equalsIgnoreCase(lastName))
+			.findFirst()
+			.map(p -> p.getAge())
+			.orElseGet(() -> {
+				System.out.println("cannot find this person!");
+				return null;
+			});
+	}
+	
+	public static List<Person> findPersonsByState(String state, List<Person> allPersons) {
+		return allPersons.stream()
+				.filter(p -> p.getAddress() != null)
+				.filter(p -> state.equalsIgnoreCase(p.getAddress().getState()))
+				.collect(Collectors.toList());
 	}
 
 }
