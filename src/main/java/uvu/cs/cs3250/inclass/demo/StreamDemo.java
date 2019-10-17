@@ -31,32 +31,33 @@ public class StreamDemo {
 		persons.add(new Person("johnson","mark", 82).setAddress(address2));
 		persons.add(new Person("doe","john", 125));
 		
-		Address mattAddr = StreamDemo.findAddressByName("matt", "fang", persons);
+//		Address mattAddr = StreamDemo.findAddressByName("matt", "fang", persons);
+//		
+//		System.out.println(mattAddr);
+//		
+//		Address jeffAddr = StreamDemo.findAddressByName("jeff", "fang", persons);
+//		
+//		System.out.println(jeffAddr);
+//		
+//		int mattAge = StreamDemo.findAgeByName("matt", "fang", persons);
+//		
+//		System.out.println(mattAge);
+//		
+//		Integer jeffAge = StreamDemo.findAgeByName("jeff", "fang", persons);
+//		
+//		System.out.println(jeffAge);
+//		
+//		List<Person> utahPeople = StreamDemo.findPersonsByState("ut", persons);
+//		
+//		utahPeople.stream()
+//			.forEach(System.out::println);
+//		
+//		List<Person> nevadaPeople = StreamDemo.findPersonsByState("nv", persons);
+//		
+//		nevadaPeople.stream()
+//			.forEach(System.out::println);
 		
-		System.out.println(mattAddr);
-		
-		Address jeffAddr = StreamDemo.findAddressByName("jeff", "fang", persons);
-		
-		System.out.println(jeffAddr);
-		
-		int mattAge = StreamDemo.findAgeByName("matt", "fang", persons);
-		
-		System.out.println(mattAge);
-		
-		Integer jeffAge = StreamDemo.findAgeByName("jeff", "fang", persons);
-		
-		System.out.println(jeffAge);
-		
-		List<Person> utahPeople = StreamDemo.findPersonsByState("ut", persons);
-		
-		utahPeople.stream()
-			.forEach(System.out::println);
-		
-		List<Person> nevadaPeople = StreamDemo.findPersonsByState("nv", persons);
-		
-		nevadaPeople.stream()
-			.forEach(System.out::println);
-		
+		System.out.println(StreamDemo.concatNamesInState("ut", persons));
 	}
 	
 	public static Address findAddressByName(String firstName, String lastName, List<Person> persons) {
@@ -86,6 +87,12 @@ public class StreamDemo {
 				.filter(p -> p.getAddress() != null)
 				.filter(p -> state.equalsIgnoreCase(p.getAddress().getState()))
 				.collect(Collectors.toList());
+	}
+	
+	public static String concatNamesInState(String state, List<Person> allPersons) {
+		return findPersonsByState(state, allPersons).stream()
+				.map(p -> p.getFirstName())
+				.collect(Collectors.joining(", "));
 	}
 
 }
